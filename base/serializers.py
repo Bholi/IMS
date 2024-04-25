@@ -11,10 +11,12 @@ class DepartmentSerializer(serializers.ModelSerializer):
         model = Department
         fields = '__all__'
 
+
 class ResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resource
         fields = '__all__'
+
 
 class VendorSerializer(serializers.ModelSerializer):
     class Meta:
