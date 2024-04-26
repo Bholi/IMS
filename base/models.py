@@ -13,10 +13,15 @@ class User(AbstractUser):
 class ResourceType(models.Model):
     name = models.CharField(max_length=100)
 
+    def __str__(self) -> str:
+        return self.name
+
 class Department(models.Model):
     name = models.CharField(max_length=100)
     floor = models.IntegerField()
     description = models.TextField()
+    def __str__(self) -> str:
+        return self.name
 
 class Resource(models.Model):
     name = models.CharField(max_length=100)
@@ -24,6 +29,8 @@ class Resource(models.Model):
     description = models.TextField()
     quantity = models.IntegerField(null=True)
     department = models.ManyToManyField(Department)
+    def __str__(self) -> str:
+        return self.name
 
 
 class Vendor(models.Model):
@@ -31,6 +38,8 @@ class Vendor(models.Model):
     address = models.TextField()
     company_name = models.CharField(max_length=200)
     contact_number = models.IntegerField()
+    def __str__(self) -> str:
+        return self.name
 
 
 class Purchase(models.Model):
