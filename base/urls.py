@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import *
 urlpatterns = [
+   path('register/',register),
    path('resource-type/',ResourceTypeView.as_view({'get':'list','post':'create'})),
    path('resource-type/<int:pk>/',ResourceTypeView.as_view({'get':'retrieve','put':'update','delete':'destroy'})),
    # path('department/',DepartmentView.as_view({'get':'list','post':'create'})),
@@ -9,6 +10,7 @@ urlpatterns = [
    # path('resource/<int:pk>/',ResourceView.as_view({'get':'retrieve','put':'update','delete':'destroy'})),
    path('department/',DepartmentView.as_view()),
    path('resource/',ResourceView.as_view()),
+   path('resource/<int:pk>/',ResourceDetailView.as_view()),
    path('vendor/',VendorView.as_view()),
    path('purchase/',PurchaseView.as_view())
 
