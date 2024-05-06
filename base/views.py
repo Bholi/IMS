@@ -6,8 +6,12 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework import status, filters
+from rest_framework.decorators import api_view,permission_classes
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.hashers import make_password
+from rest_framework.permissions import AllowAny,DjangoModelPermissions
 # Create your views here.
 
 class ResourceTypeView(ModelViewSet):
@@ -18,10 +22,13 @@ class ResourceTypeView(ModelViewSet):
 class ResourceView(GenericAPIView):
     queryset = Resource.objects.all()
     serializer_class = ResourceSerializer
+    filterset_fields = ['type','department']
+    search_fields = ['name']
 
     def get(self,request):
         queryset = self.get_queryset()
-        serializer = self.serializer_class(queryset, many=True)
+        filtered_queryset = self.filter_queryset(queryset)
+        serializer = self.serializer_class(filtered_queryset, many=True)
         return Response(serializer.data)
     
     def post(self,request):
@@ -127,20 +134,34 @@ class PurchaseView(GenericAPIView):
             return Response(serializer.errors)
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def register(request):
-
     # Only post method is used in this functions
+    password = request.data.get('password')
+    hash_password = make_password(password)
+    request.data['password'] = hash_password
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response('User Created')
     else:
         return Response(serializer.errors)
-
+    
     # if request.method == 'GET':
     #     pass
     # elif request.method == 'POST':
     #     pass
-
     # elif request.method == 'PUT':
     #     pass
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+    user = authenticate(username=email,password=password)
+    if user is None:
+        return Response('Invalid email or password',status=status.HTTP_400_BAD_REQUEST)
+    else:
+        token,_ = Token.objects.get_or_create(user=user)
+        return Response(token.key)
